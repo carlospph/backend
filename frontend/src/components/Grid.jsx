@@ -1,50 +1,91 @@
 import React from 'react';
 import styled from 'styled-components';
-import axios from 'axios'; 
-import { toast } from 'react-toastify'
-
+import { FaEdit, FaTrash } from 'react-icons/fa';
 
 const Table = styled.table`
-    border: 1px solid red;
+  border-top: 1px solid #ccc;
+  width: 100%;
+  max-width: 992px;
+  margin: 1rem auto;
+  padding-top: 0.6em;
 `;
- 
 
-//    grid ({users}) - parte que vem do banco de dados
+const ColTitle = styled.th`
+  font-weight: bold;
+  padding: 4px 0;
+  border-bottom: 1px solid gray;
+`;
 
-export function Grid({users}) {
+const TableRow = styled.tr`
+  &:nth-child(even) {
+    background-color: white;
+  }
+  &:nth-child(odd) {
+    background-color: #f2f2f2;
+  }
+`;
+
+const ActionButton = styled.div`
+    cursor:pointer;
+`;
+
+const TableCell = styled.td`
+  padding: 0.5em 0;
+  text-align: center;
+`;
+
+export function Grid({ users }) {
+
+    const handleEdit = (item) =>{
+        setOnEdit(item);
+    }
+
+
+
+    const handleDelete = async (id) => {
+        await axios
+        .delete("http://localhost:8805/" + id)
+        .then(({data}) =>{
+            const newArray = users.filter((user) =>user.id !==id);
+            setUsers(newArray);
+            toast.success(data);
+        })
+
+        .catch(({data})=> toast.error(data));
+        setOnEdit(null);
+    };
+
     return (
         <div>
-            <table>
+            <Table>
                 <thead>
                     <tr>
-                        <th>Id</th>
-                        <th>Nome</th>
-                        <th>Email</th>
+                        <ColTitle>Id</ColTitle>
+                        <ColTitle>Nome</ColTitle>
+                        <ColTitle>Email</ColTitle>
+                        <ColTitle colSpan="2">Ações</ColTitle>
                     </tr>
                 </thead>
                 <tbody>
                     {users.map((item, i) => (
-                        <tr key={i}>
-                            <td>{item.id}</td>
-                            <td>{item.nome}</td>
-                            <td>{item.email}</td>
-                            <td> [faedit] </td>
-                            <td> [fatrash] </td>
-
-
-                             {/* onClick={()=>handleDelete(item.id)} */}
-
-                        </tr>
+                        <TableRow key={item.id}>
+                            <TableCell>{item.id}</TableCell>
+                            <TableCell>{item.nome}</TableCell>
+                            <TableCell>{item.email}</TableCell>
+                            <TableCell>
+                                <ActionButton>
+                                    <FaEdit onClick={()=>handleEdit=(item)}/>
+                                </ActionButton>
+                            </TableCell>
+                            <TableCell>
+                                <ActionButton>
+                                    <FaTrash onClick={handleDelete(item.id)}/>
+                                </ActionButton>
+                            </TableCell>
+                        </TableRow>
                     ))}
                 </tbody>
-            </table>
+            </Table>
         </div>
-    )
+    );
 }
-
-/***
-   
- * 
- * 
- *  */
-
