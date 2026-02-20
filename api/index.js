@@ -1,6 +1,6 @@
 import express from 'express';
 import db from './db.js';
-import { buscarTodosUsuarios } from './models/UsuarioModel.js'; //pegar os daods no banco
+import { buscarTodosUsuarios } from './models/UsuarioModel.js'; //pegar os dados no banco
 
 const app = express();
 app.use(express.json());
