@@ -20,4 +20,6 @@ pool.query('SELECT 1', (err) => {
   } else {
     console.log('Conexão com TiDB estabelecida com sucesso!');
   }
-});
+}); 
+
+export default pool; 
