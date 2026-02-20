@@ -1,15 +1,17 @@
-import express from "express";
-import userRoutes from "./routes/users.js";
-import cors from "cors";
+import express from 'express';
+import db from './db.js'; 
 
 const app = express();
-
 app.use(express.json());
-app.use(cors());
 
-app.use("/usuarios", (req, res)=>{
-  res.send("Bem vindo a api no render. Inicialmente sem dados");
+app.get('/usuarios', (req, res) => {
+  db.query('SELECT * FROM usuarios', (err, results) => {
+    if (err) return res.status(500).send(err);
+    res.json(results);
+  });
 });
 
-app.listen(8805);
-
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Servidor rodando na porta ${PORT}`);
+});
