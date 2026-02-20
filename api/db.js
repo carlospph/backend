@@ -22,7 +22,7 @@ const pool = mysql.createPool({
   user: process.env.DB_USER,        // usuário do banco
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,    // nome exato do banco
-  port,
+  port:'4000',
 
   ssl: {
     minVersion: 'TLSv1.2',
