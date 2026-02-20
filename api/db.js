@@ -1,25 +1,51 @@
 import mysql from 'mysql2';
 
-// O pool de conexões usa as variáveis que você salvou no Render
-const pool = mysql.createPool({
-  host: process.env.DB_HOST, 
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: 'test', // Certifique-se de que o nome do banco existe no TiDB
-  port: process.env.DB_PORT || 4000,
-  ssl: {
-    minVersion: 'TLSv1.2',
-    rejectUnauthorized: true // O TiDB exige conexão segura
+// -----------------------------------------------------
+// Validação das variáveis obrigatórias
+// -----------------------------------------------------
+const required = ['DB_HOST', 'DB_USER', 'DB_PASSWORD', 'DB_PORT', 'DB_NAME'];
+
+required.forEach((key) => {
+  if (!process.env[key]) {
+    console.warn(`[WARN] Variável de ambiente ausente: ${key}`);
   }
 });
 
-// Teste para ver se conecta ao subir
+// Porta vem como string → convertemos para número
+const port = Number(process.env.DB_PORT || 3306);
+
+// -----------------------------------------------------
+// Pool de conexões MySQL/TiDB com SSL (Render)
+// -----------------------------------------------------
+const pool = mysql.createPool({
+  host: process.env.DB_HOST,        // ex: "mydb.render.com"
+  user: process.env.DB_USER,        // usuário do banco
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,    // nome exato do banco
+  port,
+
+  ssl: {
+    minVersion: 'TLSv1.2',
+    rejectUnauthorized: true,       // TiDB exige conexões seguras
+  },
+
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+});
+
+// -----------------------------------------------------
+// Teste de conexão (executa no deploy)
+// -----------------------------------------------------
 pool.query('SELECT 1', (err) => {
   if (err) {
-    console.error('Erro ao conectar ao TiDB:', err.message);
+    console.error('\n❌ Erro ao conectar ao MySQL/TiDB:');
+    console.error(err.message);
   } else {
-    console.log('Conexão com TiDB estabelecida com sucesso!');
+    console.log('\n✅ Conexão com MySQL/TiDB estabelecida com sucesso!');
   }
-}); 
+});
 
-export default pool; 
+// Exporta o pool para usar em qualquer lugar da aplicação
+export default pool;
+``
