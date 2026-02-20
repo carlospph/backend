@@ -1,4 +1,5 @@
 import express from 'express';
+import db from './db.js';
 import { buscarTodosUsuarios } from './models/UsuarioModel.js'; 
 
 const app = express();
